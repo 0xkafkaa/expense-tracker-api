@@ -64,3 +64,41 @@
     - id - primary key
     - expense_id - references expenses(id)
     - category_id - references categories(id)
+
+### Dummy userdata
+
+```
+[
+  {
+    name: 'Alexandre Veum',
+    username: 'alexandre_veum',
+    email: 'alexandre_veum45@hotmail.com',
+    password: 'emQn_TLnLtD7DTg'
+  },
+  {
+    name: 'Serenity Block',
+    username: 'serenity_block',
+    email: 'serenity_block72@yahoo.com',
+    password: '_570ygBOr8mvfMP'
+  },
+  {
+    name: 'Kamren Turcotte',
+    username: 'kamren_turcotte',
+    email: 'kamren.turcotte76@yahoo.com',
+    password: 'iIYaojZ7vzbkOZv'
+  },
+  {
+    name: 'Jaleel Dicki',
+    username: 'jaleel_dicki86',
+    email: 'jaleel.dicki39@hotmail.com',
+    password: 'RRtlu1dNVmPfioo'
+  },
+  {
+    name: 'Leda Tromp',
+    username: 'leda.tromp',
+    email: 'leda_tromp47@gmail.com',
+    password: 'yjAY0ftIaQuZgGw'
+  }
+]
+
+```

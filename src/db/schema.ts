@@ -1,12 +1,6 @@
 import { sql } from "drizzle-orm";
-import {
-  integer,
-  pgTable,
-  timestamp,
-  uuid,
-  varchar,
-} from "drizzle-orm/pg-core";
-import { createInsertSchema, createSelectSchema } from "drizzle-zod";
+import { pgTable, timestamp, uuid, varchar } from "drizzle-orm/pg-core";
+import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
 /*
@@ -35,7 +29,7 @@ export const userInputSchema = userInsertSchema.extend({
   password: z.string().min(8, "Password must be atleast 8 characters long."),
 });
 
-export type usersInsert = z.infer<typeof userInsertSchema>;
+export type User = z.infer<typeof userInsertSchema>;
 
 // export const expenses = pgTable("expenses", {
 //   id: uuid().primaryKey().defaultRandom(),
