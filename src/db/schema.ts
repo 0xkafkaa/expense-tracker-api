@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { pgTable, timestamp, uuid, varchar } from "drizzle-orm/pg-core";
+import { pgTable, timestamp, unique, uuid, varchar } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -7,7 +7,7 @@ import { z } from "zod";
 USERS - Table
 - table schema
 - validation schema
-- define types
+- type definiton
 */
 export const users = pgTable("users", {
   id: uuid().primaryKey().defaultRandom(),
@@ -46,3 +46,20 @@ export type User = typeof users.$inferInsert;
 //     .notNull()
 //     .default(sql`CURRENT_TIMESTAMP`),
 // });
+
+/*
+Categories - Table
+- table schema
+- validation schema
+- type definition
+ */
+
+export const categories = pgTable(
+  "categories",
+  {
+    id: uuid().primaryKey().defaultRandom(),
+    userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }),
+    categoryName: varchar("category_name", { length: 255 }).notNull(),
+  },
+  (t) => [unique().on(t.userId, t.categoryName)]
+);

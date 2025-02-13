@@ -24,7 +24,8 @@ A backend service for tracking expenses with authentication, categorization, and
 
 1. Clone repo: `git clone https://github.com/0xkafkaa/expense-tracker-api.git`
 2. Install dependencies: `npm install`
-3. Start server: `npm run dev`
+3. Update .env
+4. Start server: `npm run dev`
 
 ## License
 

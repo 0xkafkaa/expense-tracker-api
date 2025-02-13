@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "npx tsc && node dist/server.js",
     "test": "echo \"Error: no test specified\" && exit 1",
+    "generate": "npx drizzle-kit generate --config=src/drizzle.config.ts",
     "migrate": "npx drizzle-kit migrate --config=src/drizzle.config.ts"
   },
   "keywords": [],

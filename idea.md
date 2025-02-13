@@ -3,6 +3,7 @@
 - Authentication
   [x] User sign up
   [x] User Login
+  [x] Middleware
 - CRUD Expenses
   - Add Expense
   - Remove existing Expenses
