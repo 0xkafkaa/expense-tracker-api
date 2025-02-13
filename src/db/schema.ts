@@ -22,14 +22,15 @@ export const userInsertSchema = createInsertSchema(users, {
   email: z.string().email("Please enter an email"),
   password: z
     .string()
-    .min(60, "Password must be hashed before insertion into the db."),
+    .min(60, "Password must be hashed before insertion into the db"),
 });
 
 export const userInputSchema = userInsertSchema.extend({
-  password: z.string().min(8, "Password must be atleast 8 characters long."),
+  password: z.string().min(8, "Password must be atleast 8 characters long"),
 });
 
-export type User = z.infer<typeof userInsertSchema>;
+// export type User = z.infer<typeof userInsertSchema>;
+export type User = typeof users.$inferInsert;
 
 // export const expenses = pgTable("expenses", {
 //   id: uuid().primaryKey().defaultRandom(),
