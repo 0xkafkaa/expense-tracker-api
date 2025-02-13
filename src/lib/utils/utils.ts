@@ -15,7 +15,7 @@ export async function comparePassword(
   return isMatch;
 }
 
-type JWTParameters = {
+export type JWTParameters = {
   id: string;
   name: string;
   username: string;

@@ -1,8 +1,8 @@
 ### User flow - backend
 
 - Authentication
-  - User sign up
-  - User Login
+  [x] User sign up
+  [x] User Login
 - CRUD Expenses
   - Add Expense
   - Remove existing Expenses
