@@ -26,6 +26,8 @@ export const userInsertSchema = createInsertSchema(users, {
 });
 
 export const userInputSchema = userInsertSchema.extend({
+  name: z.string().min(3, "Please enter a valid username"),
+  username: z.string().min(5, "Please enter a valid username"),
   password: z.string().min(8, "Password must be atleast 8 characters long"),
 });
 

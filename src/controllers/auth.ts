@@ -33,8 +33,9 @@ export async function handleSignUp(req: Request, res: Response): Promise<void> {
       name,
       username,
       email,
-      hashedPassword,
+      password: hashedPassword,
     });
+
     if (!insertValidation.success) {
       res.status(400).json({
         status: "failure",
