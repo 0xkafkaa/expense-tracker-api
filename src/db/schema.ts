@@ -59,6 +59,10 @@ export const expenses = pgTable("expenses", {
     .notNull()
     .default(sql`CURRENT_TIMESTAMP`),
 });
+export const expenseInputSchema = createInsertSchema(expenses, {
+  title: z.string().min(3, "Please enter a valid expense"),
+  amount: z.number().gt(0, "Amount should be greater than 0"),
+});
 
 /*
 Categories - Table

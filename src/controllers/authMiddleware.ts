@@ -12,8 +12,13 @@ import { NextFunction, Request, Response } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import "dotenv/config";
 
-interface AuthRequest extends Request {
-  user?: JwtPayload;
+export interface payload extends JwtPayload {
+  id: string;
+  name: string;
+  username: string;
+}
+export interface AuthRequest extends Request {
+  user?: payload;
 }
 export async function authMiddleware(
   req: AuthRequest,
@@ -38,7 +43,7 @@ export async function authMiddleware(
       return;
     }
     try {
-      const userInfo = jwt.verify(token, secret) as JwtPayload;
+      const userInfo = jwt.verify(token, secret) as payload;
       req.user = userInfo;
       next();
       return;

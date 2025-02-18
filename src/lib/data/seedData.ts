@@ -17,3 +17,5 @@ export const generateUsers = (count: number): User[] => {
     return { name, username, email, password };
   });
 };
+
+console.log(JSON.stringify(generateUsers(5)));
