@@ -1,5 +1,13 @@
 import { sql } from "drizzle-orm";
-import { pgTable, timestamp, unique, uuid, varchar } from "drizzle-orm/pg-core";
+import {
+  pgTable,
+  timestamp,
+  unique,
+  uuid,
+  varchar,
+  integer,
+  primaryKey,
+} from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -34,24 +42,27 @@ export const userInputSchema = userInsertSchema.extend({
 // export type User = z.infer<typeof userInsertSchema>;
 export type User = typeof users.$inferInsert;
 
-// export const expenses = pgTable("expenses", {
-//   id: uuid().primaryKey().defaultRandom(),
-//   title: varchar({ length: 255 }).notNull(),
-//   amount: integer().notNull(),
-//   userId: uuid("user_id")
-//     .notNull()
-//     .references(() => users.id, { onDelete: "cascade" }),
-//   createdAt: timestamp("created_at").notNull().defaultNow(),
-//   updatedAt: timestamp("updated_at")
-//     .notNull()
-//     .default(sql`CURRENT_TIMESTAMP`),
-// });
+/*
+Categories - Table
+- table schema
+ */
+
+export const expenses = pgTable("expenses", {
+  id: uuid().primaryKey().defaultRandom(),
+  title: varchar({ length: 255 }).notNull(),
+  amount: integer().notNull(),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at")
+    .notNull()
+    .default(sql`CURRENT_TIMESTAMP`),
+});
 
 /*
 Categories - Table
 - table schema
-- validation schema
-- type definition
  */
 
 export const categories = pgTable(
@@ -62,4 +73,26 @@ export const categories = pgTable(
     categoryName: varchar("category_name", { length: 255 }).notNull(),
   },
   (t) => [unique().on(t.userId, t.categoryName)]
+);
+
+/*
+Expenses_categories - Junction table
+- table schema
+*/
+
+export const expensesCategories = pgTable(
+  "expenses_categories",
+  {
+    expenseId: uuid("expense_id")
+      .notNull()
+      .references(() => expenses.id, {
+        onDelete: "cascade",
+      }),
+    categoryId: uuid("category_id")
+      .notNull()
+      .references(() => categories.id, {
+        onDelete: "cascade",
+      }),
+  },
+  (t) => [primaryKey({ columns: [t.expenseId, t.categoryId] })]
 );

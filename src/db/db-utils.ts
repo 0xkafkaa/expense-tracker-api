@@ -1,6 +1,6 @@
 import "dotenv/config";
 import { drizzle } from "drizzle-orm/node-postgres";
-import { User, users } from "./schema";
+import { categories, User, users } from "./schema";
 import { UserLogin } from "../controllers/auth";
 import { eq } from "drizzle-orm";
 
@@ -58,3 +58,8 @@ export async function getAUser(email: string): Promise<UserFromSelect> {
     throw new Error("An unexpected DB error occured while selecting the user.");
   }
 }
+
+/*
+Insertion in categories
+- Insert default categories into categories
+*/
