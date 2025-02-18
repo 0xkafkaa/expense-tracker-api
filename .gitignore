@@ -55,3 +55,14 @@ coverage/
 jest.config.js
 jest.config.ts
 
+
+# Cypress
+cypress/videos/
+cypress/screenshots/
+cypress/coverage/
+cypress/fixtures/
+cypress/support/e2e.ts
+cypress/support/commands.ts
+cypress/fixtures/*.json
+cypress/integration/*.js
+cypress/integration/*.ts

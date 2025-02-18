@@ -5,7 +5,7 @@
   [x] User Login
   [x] Middleware
 - CRUD Expenses
-  - Add Expense
+  - [x] Add Expense
   - Remove existing Expenses
   - Update existing Expenses
 - List Expenses
