@@ -1,8 +1,15 @@
 import "dotenv/config";
 import { drizzle } from "drizzle-orm/node-postgres";
-import { categories, User, users } from "./schema";
+import {
+  categories,
+  expenses,
+  expensesCategories,
+  User,
+  users,
+} from "./schema";
 import { UserLogin } from "../controllers/auth";
-import { eq } from "drizzle-orm";
+import { eq, and, or, isNull } from "drizzle-orm";
+import { ExecuteResultSync } from "drizzle-orm/sqlite-core";
 
 const db = drizzle(process.env.DATABASE_URL!);
 
@@ -60,6 +67,64 @@ export async function getAUser(email: string): Promise<UserFromSelect> {
 }
 
 /*
-Insertion in categories
-- Insert default categories into categories
+Adding an expense
+- check whether the category already present in categories table
+  - NOT OK => Insert into category and proceed forward
+  - OK => Proceed forward
 */
+
+export type addExpenseInput = {
+  title: string;
+  amount: number;
+  userId: string;
+  category: string;
+};
+export async function insertAnExpense(
+  expenseData: addExpenseInput
+): Promise<void> {
+  try {
+    const result = await db.transaction(async (tx) => {
+      const categoriesFromSelect = await tx
+        .select({ id: categories.id })
+        .from(categories)
+        .where(
+          and(
+            or(
+              eq(categories.userId, expenseData.userId),
+              isNull(categories.userId)
+            ),
+            eq(categories.categoryName, expenseData.category)
+          )
+        )
+        .limit(1);
+
+      let category = categoriesFromSelect[0] ?? null;
+
+      let categoryId;
+      if (!category) {
+        const insertedCategory = await tx
+          .insert(categories)
+          .values({
+            userId: expenseData.userId,
+            categoryName: expenseData.category,
+          })
+          .returning({ id: categories.id });
+        categoryId = insertedCategory[0].id;
+      } else categoryId = category.id;
+
+      const insertedExpense = await tx
+        .insert(expenses)
+        .values({
+          title: expenseData.title,
+          amount: expenseData.amount,
+          userId: expenseData.userId,
+        })
+        .returning({ id: expenses.id });
+      const expenseId = insertedExpense[0].id;
+
+      await tx.insert(expensesCategories).values({ categoryId, expenseId });
+    });
+  } catch (error: any) {
+    throw new Error("Failed to insert expense. Please try again.");
+  }
+}
