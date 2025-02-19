@@ -28,7 +28,7 @@ import { expenseInputSchema } from "../db/schema";
 import { z } from "zod";
 import { Response } from "express";
 import { AuthRequest } from "./authMiddleware";
-import { insertAnExpense } from "../db/db-utils";
+import { deleteAnExpense, insertAnExpense } from "../db/db-utils";
 
 export const expenseInputData = expenseInputSchema.extend({
   category: z.string().min(3, "Please enter a valid category"),
@@ -65,6 +65,60 @@ export async function handleAddExpense(
       return;
     } catch (error: any) {
       res.status(400).json({ status: "failure", message: error.message });
+      return;
+    }
+  } catch (error: any) {
+    res.status(500).json({
+      status: "failure",
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+}
+/*
+Delete an expense
+- Check user from the request object using the auth middleware.
+- Validate input {id, userId(from middleware)} using Zod.
+    - If validation fails => Return status(400 => bad request) with a detailed error message.
+    - If validation succeeds => proceed:
+        - Check whether an expense with the id exists for the user.
+          - If not exists => Return status(400 => bad request) with a message 'Expense doesn't exist'
+          - If does exist => delete it from expenses.
+    - In case of errors:
+        - If any step fails, return an appropriate status code (400/500) with the corresponding message.
+*/
+
+const expenseDeleteInput = z.object({
+  userId: z.string().uuid("Not a valid user"),
+  expenseId: z.string().uuid("Not a valid expense"),
+});
+export type expenseDeleteData = z.infer<typeof expenseDeleteInput>;
+export async function handleDeleteExpense(
+  req: AuthRequest,
+  res: Response
+): Promise<void> {
+  try {
+    const user = req.user;
+    const { expenseId } = req.body;
+    const inputValidation = expenseDeleteInput.safeParse({
+      userId: user?.id,
+      expenseId,
+    });
+    if (!inputValidation.success) {
+      res
+        .status(400)
+        .json({ message: "failure", status: "Input validation failed" });
+      return;
+    }
+    try {
+      await deleteAnExpense({ userId: user?.id!, expenseId });
+      res.status(204).json({
+        status: "success",
+        message: "Expense delete successful",
+      });
+      return;
+    } catch (error: any) {
+      res.status(404).json({ status: "failure", message: error.message });
       return;
     }
   } catch (error: any) {

@@ -10,6 +10,7 @@ import {
 import { UserLogin } from "../controllers/auth";
 import { eq, and, or, isNull } from "drizzle-orm";
 import { ExecuteResultSync } from "drizzle-orm/sqlite-core";
+import { expenseDeleteData } from "../controllers/expenses";
 
 const db = drizzle(process.env.DATABASE_URL!);
 
@@ -126,5 +127,45 @@ export async function insertAnExpense(
     });
   } catch (error: any) {
     throw new Error("Failed to insert expense. Please try again.");
+  }
+}
+
+/*
+Deleting an expense
+- check if the expense exists on the user
+  - OK - Delete the expense
+  - NOT OK - Throw an error (expense doesn't exist)  
+*/
+
+export async function deleteAnExpense(
+  expenseData: expenseDeleteData
+): Promise<void> {
+  try {
+    const result = await db.transaction(async (tx) => {
+      const expensesFromSelect = await tx
+        .select({ expenseId: expenses.id })
+        .from(expenses)
+        .where(
+          and(
+            eq(expenses.id, expenseData.expenseId),
+            eq(expenses.userId, expenseData.userId)
+          )
+        )
+        .limit(1);
+      const expense = expensesFromSelect[0] ?? null;
+      if (!expense) {
+        throw new Error("Expense doesn't exist");
+      }
+      await tx
+        .delete(expenses)
+        .where(
+          and(
+            eq(expenses.id, expenseData.expenseId),
+            eq(expenses.userId, expenseData.userId)
+          )
+        );
+    });
+  } catch (error) {
+    throw error;
   }
 }

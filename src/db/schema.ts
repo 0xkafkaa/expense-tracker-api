@@ -95,7 +95,7 @@ export const expensesCategories = pgTable(
     categoryId: uuid("category_id")
       .notNull()
       .references(() => categories.id, {
-        onDelete: "cascade",
+        onDelete: "set null",
       }),
   },
   (t) => [primaryKey({ columns: [t.expenseId, t.categoryId] })]

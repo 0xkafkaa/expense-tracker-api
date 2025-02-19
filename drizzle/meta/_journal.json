@@ -15,6 +15,13 @@
       "when": 1739872225964,
       "tag": "0001_insert_default_categories",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1739930869266,
+      "tag": "0002_fat_shinobi_shaw",
+      "breakpoints": true
     }
   ]
 }
