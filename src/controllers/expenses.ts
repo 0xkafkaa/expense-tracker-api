@@ -50,7 +50,7 @@ export async function handleAddExpense(
     });
     if (!inputValidations.success) {
       res.status(400).json({
-        status: "failue",
+        status: "failure",
         message: "Input validation failed",
         error: inputValidations.error.errors,
       });
@@ -107,7 +107,7 @@ export async function handleDeleteExpense(
     if (!inputValidation.success) {
       res
         .status(400)
-        .json({ message: "failure", status: "Input validation failed" });
+        .json({ status: "failure", message: "Input validation failed" });
       return;
     }
     try {

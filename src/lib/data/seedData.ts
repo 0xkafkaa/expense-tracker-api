@@ -18,4 +18,5 @@ export const generateUsers = (count: number): User[] => {
   });
 };
 
-console.log(JSON.stringify(generateUsers(5)));
+// console.log(JSON.stringify(generateUsers(1)));
+console.log(generateUsers(1));

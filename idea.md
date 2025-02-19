@@ -6,7 +6,7 @@
   [x] Middleware
 - CRUD Expenses
   - [x] Add Expense
-  - Remove existing Expenses
+  - [x] Remove existing Expenses
   - Update existing Expenses
 - List Expenses
   - List all Expenses
@@ -16,8 +16,8 @@
     - Last 3 Months
     - Custom (A start and an end date)
 - Other details
-  - All the routes will be protected (basic)
-  - Add categories for all the expenses
+  - [x] All the routes will be protected (basic)
+  - [x] Add categories for all the expenses
 
 ### Ideas to be built on top of it
 
