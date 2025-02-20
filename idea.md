@@ -11,8 +11,8 @@
 - List Expenses
   - [x] List all Expenses
   - Add Filter by
-    - Last week
-    - Last Month
+    - [x] Last week
+    - [x] Last Month
     - Last 3 Months
     - Custom (A start and an end date)
 - Other details

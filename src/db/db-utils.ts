@@ -8,7 +8,7 @@ import {
   users,
 } from "./schema";
 import { UserLogin } from "../controllers/auth";
-import { eq, and, or, isNull } from "drizzle-orm";
+import { eq, and, or, isNull, gte, sql } from "drizzle-orm";
 import { expenseDeleteData } from "../controllers/expenses";
 
 const db = drizzle(process.env.DATABASE_URL!);
@@ -186,9 +186,35 @@ type expense = {
   amount: number;
   categoryName: string | null;
 };
-export async function getAllExpenses(id: string): Promise<expense[]> {
+// export async function getAllExpenses(id: string): Promise<expense[]> {
+//   try {
+//     const data = await db
+//       .select({
+//         id: expenses.id,
+//         title: expenses.title,
+//         amount: expenses.amount,
+//         date: expenses.date,
+//         categoryName: categories.categoryName,
+//       })
+//       .from(expenses)
+//       .where(eq(expenses.userId, id))
+//       .leftJoin(
+//         expensesCategories,
+//         eq(expenses.id, expensesCategories.expenseId)
+//       )
+//       .leftJoin(categories, eq(expensesCategories.categoryId, categories.id));
+//     return data;
+//   } catch (error: any) {
+//     throw new Error(error.message);
+//   }
+// }
+
+export async function getAllExpenses(
+  userId: string,
+  filter?: "weekly" | "monthly"
+): Promise<expense[]> {
   try {
-    const data = await db
+    let query = db
       .select({
         id: expenses.id,
         title: expenses.title,
@@ -197,12 +223,58 @@ export async function getAllExpenses(id: string): Promise<expense[]> {
         categoryName: categories.categoryName,
       })
       .from(expenses)
-      .where(eq(expenses.userId, id))
       .leftJoin(
         expensesCategories,
         eq(expenses.id, expensesCategories.expenseId)
       )
-      .leftJoin(categories, eq(expensesCategories.categoryId, categories.id));
+      .leftJoin(categories, eq(expensesCategories.categoryId, categories.id))
+      .where(eq(expenses.userId, userId)); // Initial filter for user ID
+
+    // Additional filters based on 'filter' argument
+    if (filter === "weekly") {
+      query = db
+        .select({
+          id: expenses.id,
+          title: expenses.title,
+          amount: expenses.amount,
+          date: expenses.date,
+          categoryName: categories.categoryName,
+        })
+        .from(expenses)
+        .leftJoin(
+          expensesCategories,
+          eq(expenses.id, expensesCategories.expenseId)
+        )
+        .leftJoin(categories, eq(expensesCategories.categoryId, categories.id))
+        .where(
+          and(
+            eq(expenses.userId, userId),
+            gte(expenses.date, sql`CURRENT_DATE - INTERVAL '7 days'`)
+          )
+        );
+    } else if (filter === "monthly") {
+      query = db
+        .select({
+          id: expenses.id,
+          title: expenses.title,
+          amount: expenses.amount,
+          date: expenses.date,
+          categoryName: categories.categoryName,
+        })
+        .from(expenses)
+        .leftJoin(
+          expensesCategories,
+          eq(expenses.id, expensesCategories.expenseId)
+        )
+        .leftJoin(categories, eq(expensesCategories.categoryId, categories.id))
+        .where(
+          and(
+            eq(expenses.userId, userId),
+            gte(expenses.date, sql`CURRENT_DATE - INTERVAL '1 month'`)
+          )
+        );
+    }
+    const data = query.execute();
     return data;
   } catch (error: any) {
     throw new Error(error.message);
