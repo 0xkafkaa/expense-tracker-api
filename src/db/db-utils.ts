@@ -9,7 +9,6 @@ import {
 } from "./schema";
 import { UserLogin } from "../controllers/auth";
 import { eq, and, or, isNull } from "drizzle-orm";
-import { ExecuteResultSync } from "drizzle-orm/sqlite-core";
 import { expenseDeleteData } from "../controllers/expenses";
 
 const db = drizzle(process.env.DATABASE_URL!);
@@ -79,6 +78,7 @@ export type addExpenseInput = {
   amount: number;
   userId: string;
   category: string;
+  date: string;
 };
 export async function insertAnExpense(
   expenseData: addExpenseInput
@@ -119,6 +119,7 @@ export async function insertAnExpense(
           title: expenseData.title,
           amount: expenseData.amount,
           userId: expenseData.userId,
+          date: expenseData.date,
         })
         .returning({ id: expenses.id });
       const expenseId = insertedExpense[0].id;
@@ -167,5 +168,43 @@ export async function deleteAnExpense(
     });
   } catch (error) {
     throw error;
+  }
+}
+
+/*
+Get all expenses
+- pass the userID as the argument
+- get all the expenses with their tags
+*/
+
+// type expense = typeof expenses.$inferSelect;
+
+type expense = {
+  date: string;
+  id: string;
+  title: string;
+  amount: number;
+  categoryName: string | null;
+};
+export async function getAllExpenses(id: string): Promise<expense[]> {
+  try {
+    const data = await db
+      .select({
+        id: expenses.id,
+        title: expenses.title,
+        amount: expenses.amount,
+        date: expenses.date,
+        categoryName: categories.categoryName,
+      })
+      .from(expenses)
+      .where(eq(expenses.userId, id))
+      .leftJoin(
+        expensesCategories,
+        eq(expenses.id, expensesCategories.expenseId)
+      )
+      .leftJoin(categories, eq(expensesCategories.categoryId, categories.id));
+    return data;
+  } catch (error: any) {
+    throw new Error(error.message);
   }
 }
