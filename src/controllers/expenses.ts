@@ -28,7 +28,11 @@ import { expenseInputSchema } from "../db/schema";
 import { z } from "zod";
 import { Response } from "express";
 import { AuthRequest } from "./authMiddleware";
-import { deleteAnExpense, insertAnExpense } from "../db/db-utils";
+import {
+  deleteAnExpense,
+  getAllExpenses,
+  insertAnExpense,
+} from "../db/db-utils";
 
 export const expenseInputData = expenseInputSchema.extend({
   category: z.string().min(3, "Please enter a valid category"),
@@ -144,3 +148,36 @@ Get all expenses
   - In case of errors:
     - If any step fails, return an appropriate status code (400/500) with the corresponding message.
 */
+
+export async function handleGetExpenses(
+  req: AuthRequest,
+  res: Response
+): Promise<void> {
+  try {
+    const user = req.user;
+    if (!user) {
+      res
+        .status(400)
+        .json({ status: "failure", message: "User validation failed" });
+      return;
+    }
+    try {
+      const expenseData = await getAllExpenses(user.id);
+      res.status(200).json({
+        status: "success",
+        message: "Expense get successful",
+        data: expenseData,
+      });
+      return;
+    } catch (error: any) {
+      res.status(400).json({ status: "failure", message: error.message });
+      return;
+    }
+  } catch (error: any) {
+    res.status(500).json({
+      status: "failure",
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+}

@@ -9,7 +9,7 @@
   - [x] Remove existing Expenses
   - Update existing Expenses
 - List Expenses
-  - List all Expenses
+  - [x] List all Expenses
   - Add Filter by
     - Last week
     - Last Month
