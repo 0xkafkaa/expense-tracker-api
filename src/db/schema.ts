@@ -7,6 +7,7 @@ import {
   varchar,
   integer,
   primaryKey,
+  date,
 } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
@@ -54,6 +55,9 @@ export const expenses = pgTable("expenses", {
   userId: uuid("user_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
+  date: date()
+    .notNull()
+    .default(sql`CURRENT_DATE`),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at")
     .notNull()
