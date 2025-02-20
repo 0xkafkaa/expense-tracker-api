@@ -39,6 +39,7 @@ describe("Expense API Tests", () => {
           title: "Groceries",
           amount: 50,
           category: "Food",
+          date: "2020-01-01",
         },
       }).then((response) => {
         expect(response.status).to.eq(201);

@@ -32,6 +32,7 @@ import { deleteAnExpense, insertAnExpense } from "../db/db-utils";
 
 export const expenseInputData = expenseInputSchema.extend({
   category: z.string().min(3, "Please enter a valid category"),
+  date: z.string().date(),
 });
 export type expenseInputDataType = z.infer<typeof expenseInputData>;
 
@@ -41,7 +42,7 @@ export async function handleAddExpense(
 ): Promise<void> {
   try {
     const user = req.user;
-    const { title, amount, category } = req.body;
+    const { title, amount, category, date } = req.body;
     const inputValidations = expenseInputData.safeParse({
       title,
       amount,
@@ -57,7 +58,13 @@ export async function handleAddExpense(
       return;
     }
     try {
-      await insertAnExpense({ title, amount, category, userId: user?.id! });
+      await insertAnExpense({
+        title,
+        amount,
+        category,
+        userId: user?.id!,
+        date,
+      });
       res.status(201).json({
         status: "success",
         message: "Expense insertion successful",
@@ -129,3 +136,11 @@ export async function handleDeleteExpense(
     });
   }
 }
+
+/*
+Get all expenses
+- Check user from the request object using the auth middleware.
+  - If validation succeeds => proceed:
+  - In case of errors:
+    - If any step fails, return an appropriate status code (400/500) with the corresponding message.
+*/
