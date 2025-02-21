@@ -33,6 +33,7 @@ import {
   getAllExpenses,
   insertAnExpense,
 } from "../db/db-utils";
+import { error } from "cypress/types/jquery";
 
 export const expenseInputData = expenseInputSchema.extend({
   category: z.string().min(3, "Please enter a valid category"),
@@ -47,11 +48,13 @@ export async function handleAddExpense(
   try {
     const user = req.user;
     const { title, amount, category, date } = req.body;
+    console.log(date);
     const inputValidations = expenseInputData.safeParse({
       title,
       amount,
       category,
       userId: user?.id,
+      date,
     });
     if (!inputValidations.success) {
       res.status(400).json({
@@ -115,10 +118,14 @@ export async function handleDeleteExpense(
       userId: user?.id,
       expenseId,
     });
+    console.log(expenseId);
+    console.log(inputValidation);
     if (!inputValidation.success) {
-      res
-        .status(400)
-        .json({ status: "failure", message: "Input validation failed" });
+      res.status(400).json({
+        status: "failure",
+        message: "Input validation failed",
+        error: inputValidation.error.errors,
+      });
       return;
     }
     try {

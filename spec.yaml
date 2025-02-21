@@ -1,0 +1,150 @@
+openapi: 3.0.3
+info:
+  title: Expense Tracker API
+  description: API for user authentication and expense management. This API uses PostgreSQL as its database.
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000
+paths:
+  /auth/signup:
+    post:
+      summary: User Signup
+      description: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  minLength: 3
+                username:
+                  type: string
+                  minLength: 5
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  minLength: 8
+              required:
+                - name
+                - username
+                - email
+                - password
+      responses:
+        "201":
+          description: User signup successful
+        "400":
+          description: Input validation failed
+        "409":
+          description: User already exists
+  /auth/login:
+    post:
+      summary: User Login
+      description: Authenticate user and return a session token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  minLength: 8
+              required:
+                - email
+                - password
+      responses:
+        "200":
+          description: User login successful
+        "400":
+          description: Input validation failed
+        "401":
+          description: Incorrect password or invalid token
+  /expense/all:
+    get:
+      summary: Get all expenses
+      description: Retrieve all expenses for the authenticated user
+      security:
+        - cookieAuth: []
+      parameters:
+        - in: query
+          name: filter
+          schema:
+            type: string
+            enum: [weekly, monthly]
+          description: Filter expenses by time range
+      responses:
+        "200":
+          description: List of expenses returned successfully
+        "400":
+          description: User validation failed
+  /expense/add:
+    post:
+      summary: Add an expense
+      description: Create a new expense entry
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  minLength: 3
+                amount:
+                  type: number
+                  minimum: 0.01
+                category:
+                  type: string
+                  minLength: 3
+                date:
+                  type: string
+                  format: date
+              required:
+                - title
+                - amount
+                - category
+                - date
+      responses:
+        "201":
+          description: Expense added successfully
+        "400":
+          description: Input validation failed
+  /expense/delete:
+    delete:
+      summary: Delete an expense
+      description: Remove an expense entry for the authenticated user
+      security:
+        - cookieAuth: []
+      parameters:
+        - in: query
+          name: expenseId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: The ID of the expense to delete
+      responses:
+        "204":
+          description: Expense deleted successfully
+        "400":
+          description: Input validation failed
+        "404":
+          description: Expense not found
+components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: token

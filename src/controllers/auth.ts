@@ -128,9 +128,16 @@ export async function handleLogin(req: Request, res: Response): Promise<void> {
         maxAge: 3600000,
         sameSite: "strict",
       });
-      res
-        .status(200)
-        .json({ status: "success", message: "User login successful" });
+      res.status(200).json({
+        status: "success",
+        message: "User login successful",
+        user: {
+          id: user.id,
+          name: user.name,
+          username: user.username,
+          email: email, // Include email if necessary
+        },
+      });
     } catch (error: any) {
       if (error.message.includes("User doesn't exist")) {
         res.status(400).json({ status: "failure", message: error.message });
